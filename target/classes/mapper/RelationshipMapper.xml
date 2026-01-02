@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.Birthday_reminder.mapper.RelationshipMapper">
+
+    <resultMap id="BaseResultMap" type="com.Birthday_reminder.domain.Relationship">
+        <id property="id" column="id" />
+        <result property="name" column="name" />
+        <result property="myEmail" column="my_email" />
+        <result property="calendarType" column="calendar_type" />
+        <result property="birthday" column="birthday" />
+        <result property="birthdayMonth" column="birthday_month" />
+        <result property="birthdayDay" column="birthday_day" />
+        <result property="tag" column="tag" />
+        <result property="remindEnabled" column="reminder_enabled" />
+        <result property="congratulateEnabled" column="congratulate_enabled" />
+        <result property="relationshipEmail" column="relationship_email" />
+        <result property="greeting" column="greeting" />
+        <result property="selfCall" column="self_call" />
+        <result property="notes" column="notes" />
+        <result property="daysBefore" column="days_before" typeHandler="com.Birthday_reminder.typehandler.IntegerListJsonTypeHandler" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,name,my_email,calendar_type,birthday,birthday_month,birthday_day,
+        tag,reminder_enabled,congratulate_enabled,relationship_email,greeting,
+        self_call,notes,days_before
+    </sql>
+
+    <select id="selectAll" resultMap="BaseResultMap" parameterType="com.Birthday_reminder.dto.RelationshipPageDTO">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM relationship
+        <where>
+            <if test="name != null and name != ''">
+                name like concat('%',#{name},'%')
+            </if>
+            <if test="tag != null and tag != ''">
+                and  tag like concat('%',#{tag},'%')
+            </if>
+        </where>
+    </select>
+
+    <select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM relationship
+        WHERE id = #{id}
+    </select>
+
+    <insert id="insert" parameterType="com.Birthday_reminder.domain.Relationship" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO relationship
+        (name,my_email, calendar_type, birthday, birthday_month, birthday_day, tag,
+         reminder_enabled, congratulate_enabled, relationship_email, greeting,
+         self_call, notes, days_before)
+        VALUES
+            (#{name},#{myEmail}, #{calendarType}, #{birthday}, #{birthdayMonth}, #{birthdayDay}, #{tag},
+             #{remindEnabled}, #{congratulateEnabled}, #{relationshipEmail}, #{greeting},
+             #{selfCall}, #{notes}, #{daysBefore, typeHandler=com.Birthday_reminder.typehandler.IntegerListJsonTypeHandler})
+    </insert>
+
+    <update id="update" parameterType="com.Birthday_reminder.domain.Relationship">
+        UPDATE relationship
+        SET name = #{name},
+            my_email = #{myEmail},
+            calendar_type = #{calendarType},
+            birthday = #{birthday},
+            birthday_month = #{birthdayMonth},
+            birthday_day = #{birthdayDay},
+            tag = #{tag},
+            reminder_enabled = #{remindEnabled},
+            congratulate_enabled = #{congratulateEnabled},
+            relationship_email = #{relationshipEmail},
+            greeting = #{greeting},
+            self_call = #{selfCall},
+            notes = #{notes},
+            days_before = #{daysBefore, typeHandler=com.Birthday_reminder.typehandler.IntegerListJsonTypeHandler}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="java.lang.Integer">
+        DELETE FROM relationship
+        WHERE id = #{id}
+    </delete>
+</mapper>

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.Birthday_reminder.mapper.ReminderRecordMapper">
+
+    <resultMap id="BaseResultMap" type="com.Birthday_reminder.domain.ReminderRecord">
+        <id property="id" column="id" />
+        <result property="relationshipId" column="relationship_id" />
+        <result property="reminderTime" column="reminder_time" />
+        <result property="receiver" column="receiver" />
+        <result property="reminderType" column="reminder_type" />
+        <result property="relationshipName" column="relationship_name" />
+        <result property="birthdayDate" column="birthday_date" />
+        <result property="daysBeforeReminder" column="days_before_reminder" />
+        <result property="greeting" column="greeting" />
+        <result property="selfCall" column="self_call" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,relationship_id,reminder_time,receiver,reminder_type
+    </sql>
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM reminder_record
+        <where>
+            <if test="relationshipId != null">
+                AND relationship_id = #{relationshipId}
+            </if>
+        </where>
+        ORDER BY reminder_time DESC
+    </select>
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM reminder_record
+        WHERE id = #{id}
+    </select>
+    <insert id="insert">
+        INSERT INTO reminder_record
+        (relationship_id, reminder_time, receiver, reminder_type)
+        VALUES
+        (#{relationshipId}, #{reminderTime}, #{receiver}, #{reminderType})
+    </insert>
+    
+    <!-- 查询未发送的提醒记录（关联亲友信息和提醒计划） -->
+    <select id="selectPendingRecords" resultMap="BaseResultMap">
+        SELECT 
+            rr.id,
+            rr.relationship_id,
+            rr.reminder_time,
+            rr.receiver,
+            rr.reminder_type,
+            r.name as relationship_name,
+            DATE_FORMAT(r.birthday, '%Y-%m-%d') as birthday_date,
+            rp.days_before as days_before_reminder,
+            r.greeting as greeting,
+            r.self_call as self_call
+        FROM reminder_record rr
+        INNER JOIN relationship r ON rr.relationship_id = r.id
+        LEFT JOIN reminder_plan rp ON rr.relationship_id = rp.relationship_id AND rp.execution_status = 0
+        WHERE rr.reminder_time &gt; DATE_SUB(NOW(), INTERVAL 10 MINUTE)
+          AND rr.reminder_time &lt;= NOW()
+        ORDER BY rr.reminder_time ASC
+        LIMIT 50
+    </select>
+</mapper>

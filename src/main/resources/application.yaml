@@ -1,0 +1,47 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: Birthday_reminder
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/table_Birthday?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  mail:
+    host: smtp.qq.com
+    port: 587
+    username: xxxxxxxxxx@qq.com
+    password: xxxxxxxxxxxx # 授权码
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  devtools:
+    restart:
+      enabled: true
+      additional-paths:
+        - src/main/java
+        - src/main/resources
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.Birthday_reminder.domain
+
+logging:
+  level:
+    com.Birthday_reminder: DEBUG
+    org.springframework.jdbc: DEBUG
+    org.springframework.boot.autoconfigure.jdbc: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"  # 暴露所有端点
+  endpoint:
+    health:
+      show-details: always  # 让健康检查端点显示详细信息

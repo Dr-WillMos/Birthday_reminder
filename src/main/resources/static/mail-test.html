@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>邮件发送测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📧 邮件发送测试</h1>
+        
+        <form id="mailForm">
+            <div class="form-group">
+                <label for="to">收件人邮箱:</label>
+                <input type="email" id="to" name="to" required placeholder="输入收件人邮箱">
+            </div>
+            
+            <div class="form-group">
+                <label for="subject">邮件主题:</label>
+                <input type="text" id="subject" name="subject" required placeholder="输入邮件主题">
+            </div>
+            
+            <div class="form-group">
+                <label for="type">邮件类型:</label>
+                <select id="type" name="type">
+                    <option value="notice">生日提醒邮件</option>
+                    <option value="text">文本邮件</option>
+                    <option value="html">HTML邮件</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="content">邮件内容:</label>
+                <textarea id="content" name="content" rows="5" placeholder="输入邮件内容（如果是文本或HTML邮件）"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="relationshipName">亲友姓名 (仅生日提醒邮件):</label>
+                <input type="text" id="relationshipName" name="relationshipName" placeholder="输入亲友姓名">
+            </div>
+            
+            <div class="form-group">
+                <label for="birthday">生日日期 (仅生日提醒邮件):</label>
+                <input type="date" id="birthday" name="birthday">
+            </div>
+            
+            <div class="form-group">
+                <label for="days">距离天数 (仅生日提醒邮件):</label>
+                <input type="number" id="days" name="days" placeholder="输入距离天数" value="3">
+            </div>
+            
+            <button type="submit">发送测试邮件</button>
+        </form>
+        
+        <div id="result" class="result"></div>
+    </div>
+
+    <script>
+        document.getElementById('mailForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const type = formData.get('type');
+            const to = formData.get('to');
+            const subject = formData.get('subject');
+            
+            let endpoint, requestData;
+            
+            if (type === 'notice') {
+                // 生日提醒邮件
+                endpoint = '/mail/sendTestNotice';
+                requestData = {
+                    to: to,
+                    relationshipName: formData.get('relationshipName') || '测试用户',
+                    birthday: formData.get('birthday') || '2025-01-01',
+                    days: formData.get('days') || '3'
+                };
+            } else if (type === 'text') {
+                // 文本邮件
+                endpoint = '/mail/sendText';
+                requestData = {
+                    to: to,
+                    subject: subject,
+                    text: formData.get('content')
+                };
+            } else {
+                // HTML邮件
+                endpoint = '/mail/sendHtml';
+                requestData = {
+                    to: to,
+                    subject: subject,
+                    html: formData.get('content')
+                };
+            }
+            
+            try {
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestData)
+                });
+                
+                const result = await response.json();
+                const resultDiv = document.getElementById('result');
+                
+                if (result.success) {
+                    resultDiv.className = 'result success';
+                    resultDiv.style.display = 'block';
+                    resultDiv.textContent = result.message;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.style.display = 'block';
+                    resultDiv.textContent = result.message;
+                }
+            } catch (error) {
+                const resultDiv = document.getElementById('result');
+                resultDiv.className = 'result error';
+                resultDiv.style.display = 'block';
+                resultDiv.textContent = '请求失败: ' + error.message;
+            }
+        });
+        
+        // 设置生日日期为今天
+        document.getElementById('birthday').valueAsDate = new Date();
+    </script>
+</body>
+</html>

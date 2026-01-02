@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生日提醒</title>
+    <style>
+        :root {
+            --primary-blue: #1e88e5;
+            --light-blue: #e3f2fd;
+            --dark-blue: #1565c0;
+            --text-dark: #263238;
+            --text-light: #ffffff;
+            --glass-bg: rgba(255, 255, 255, 0.2);
+            --glass-border: rgba(255, 255, 255, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--light-blue) 0%, #bbdefb 50%, var(--primary-blue) 100%);
+            background-attachment: fixed;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 10px 30px rgba(30, 136, 229, 0.2);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            z-index: -1;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-blue), var(--dark-blue));
+            color: var(--text-light);
+            text-align: center;
+            padding: 30px 20px;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin: 0;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            letter-spacing: 1px;
+        }
+
+        .content {
+            padding: 30px;
+            text-align: center;
+        }
+
+        .cake-icon {
+            font-size: 60px;
+            margin: 10px 0 20px;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .content > p {
+            font-size: 16px;
+            margin-bottom: 20px;
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+
+        .birthday-info {
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border: 1px solid rgba(255,255,255,0.4);
+        }
+
+        .person-name {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--dark-blue);
+            margin: 10px 0;
+        }
+
+        .date {
+            color: #546e7a;
+            font-size: 16px;
+            margin: 10px 0;
+            font-weight: 500;
+        }
+
+        .days-count {
+            font-size: 42px;
+            font-weight: 700;
+            color: var(--dark-blue);
+            margin: 15px 0;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+            display: inline-block;
+        }
+
+        .days-count::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 10%;
+            width: 80%;
+            height: 3px;
+            background: linear-gradient(to right, transparent, var(--primary-blue), transparent);
+        }
+
+        .footer {
+            background: rgba(21, 101, 192, 0.1);
+            text-align: center;
+            padding: 20px;
+            color: #455a64;
+            font-size: 14px;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            border-top: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .footer p {
+            margin: 5px 0;
+        }
+
+        /* 动画效果 */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* 响应式设计 */
+        @media screen and (max-width: 600px) {
+            body {
+                padding: 15px;
+            }
+
+            .container {
+                border-radius: 15px;
+            }
+
+            .header {
+                padding: 25px 15px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .content {
+                padding: 25px 15px;
+            }
+
+            .cake-icon {
+                font-size: 50px;
+            }
+
+            .person-name {
+                font-size: 22px;
+            }
+
+            .days-count {
+                font-size: 36px;
+            }
+
+            .birthday-info {
+                padding: 20px 15px;
+                margin: 20px 0;
+            }
+        }
+
+        @media screen and (max-width: 400px) {
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .content > p {
+                font-size: 15px;
+            }
+
+            .person-name {
+                font-size: 20px;
+            }
+
+            .days-count {
+                font-size: 32px;
+            }
+
+            .date {
+                font-size: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>🎂 生日提醒 🎂</h1>
+    </div>
+    <div class="content">
+        <div class="cake-icon">🎂</div>
+        <p>亲爱的用户，您关注的亲友即将迎来生日</p>
+
+        <div class="birthday-info">
+            <div class="person-name">{relationshipName}</div>
+            <div class="date">生日日期: {birthday}</div>
+            <div class="days-count">{days}天</div>
+            <p>别忘了准备生日祝福哦！</p>
+        </div>
+
+        <p>提前准备，让这份祝福更加特别</p>
+    </div>
+    <div class="footer">
+        <p>生日提醒服务</p>
+        <p>愿每一个生日都充满欢声笑语</p>
+    </div>
+</div>
+</body>
+</html>

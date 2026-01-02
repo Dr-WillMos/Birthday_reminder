@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.Birthday_reminder.mapper.ReminderPlanMapper">
+
+    <resultMap id="BaseResultMap" type="com.Birthday_reminder.domain.ReminderPlan">
+        <id property="id" column="id" />
+        <result property="relationshipId" column="relationship_id" />
+        <result property="reminderDate" column="reminder_date" />
+        <result property="daysBefore" column="days_before" />
+        <result property="reminderType" column="reminder_type" />
+        <result property="executionStatus" column="execution_status" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,relationship_id,reminder_date,days_before,reminder_type,execution_status
+    </sql>
+    <insert id="saveBatch">
+        INSERT INTO reminder_plan
+        (relationship_id,reminder_date,days_before,reminder_type,execution_status)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.relationshipId},#{item.reminderDate},#{item.daysBefore},#{item.reminderType},#{item.executionStatus})
+        </foreach>
+    </insert>
+    <update id="update">
+        UPDATE reminder_plan
+        SET relationship_id  = #{relationshipId},
+            reminder_date    = #{reminderDate},
+            days_before      = #{daysBefore},
+            reminder_type    = #{reminderType},
+            execution_status = #{executionStatus}
+        WHERE id = #{id}
+    </update>
+    <delete id="deleteByRelationshipId">
+        DELETE FROM reminder_plan
+        WHERE relationship_id = #{relationshipId}
+    </delete>
+    <select id="listUndoPlans" resultType="com.Birthday_reminder.domain.ReminderPlan">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM reminder_plan
+        WHERE execution_status = 0
+        AND reminder_date = #{now}
+    </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM reminder_plan
+        <where>
+            <if test="relationshipId != null">
+                AND relationship_id = #{relationshipId}
+            </if>
+        </where>
+        ORDER BY reminder_date DESC
+    </select>
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM reminder_plan
+        WHERE id = #{id}
+    </select>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO reminder_plan
+        (relationship_id, reminder_date, days_before, reminder_type, execution_status)
+        VALUES
+        (#{relationshipId}, #{reminderDate}, #{daysBefore}, #{reminderType}, #{executionStatus})
+    </insert>
+    <delete id="deleteById">
+        DELETE FROM reminder_plan
+        WHERE id = #{id}
+    </delete>
+</mapper>
